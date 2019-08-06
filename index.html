@@ -1,92 +1,160 @@
 <!DOCTYPE html>
-
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="description" content="">
-		<meta name="author" content="Preston Lee">
-		<link rel="shortcut icon" href="../../assets/ico/favicon.ico">
-	
-		<title>Sequence Alignment Visualizer- Preston Lee</title>
-	
-
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-		<script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-		<script src="javascripts/utilities.js"></script>
-		<script src="javascripts/application.js"></script>
-
-		<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-		<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
-		<link href="stylesheets/application.css" rel="stylesheet">
-
+		<meta name="author" content="Tony Boyles <nsp3@cdc.gov>">
+		<title>Sequence Alignment</title>
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
+		<link rel="stylesheet" href="stylesheets/application.css" />
 	</head>
-
-	<body screen_capture_injected="true">
-
-	
+	<body>
 		<div class="container">
-			<h1>Dynamic Programming Alignment</h1>
-			<p class="lead">Type in some sequences to pairwise align. </p>
 			<form id="sequence_form">
-				<div class="col-md-6">
-					<div>
-						<label for="sequence1">Sequence 1</label>
-						<input id="sequence1" class="form-control input-lg" type="text" placeholder="e.g. GATTACNAGATACCA" required autofocus></input>
+				<h1>Dynamic Programming Alignment</h1>
+				<p class="lead">Enter some sequences to align.</p>
+				<div class="row">
+					<div class="col">
+						<div class="form-group">
+							<label for="sequence1">Reference</label>
+							<input id="sequence1" class="form-control input-lg" type="text" placeholder="e.g. GATTACNAGATACCA" required autofocus></input>
+						</div>
+						<p class="lead">Optionally fiddle with scoring.</p>
+						<div>
+							<label for="gap_penalty">Gap Penalty</label>
+							<input id="gap_penalty" type="number" value="1"></input>
+						</div>
 					</div>
-					<!--p class="lead">Optionally fiddle with scoring.</p>
-					<div>
-						<label for="gap_penalty">Gap Penalty</label>
-						<input id="gap_penalty" type="text" default="1" required></input>
-					</div-->
-				</div>
-				<div class="col-md-6">
-					<div>
-						<label for="sequence2">Sequence 2</label>
-						<input id="sequence2" class="form-control input-lg" type="text" placeholder="e.g. ATACNGGATAACAN" required></input>
+					<div class="col">
+						<div class="form-group">
+							<label for="sequence2">Target</label>
+							<input id="sequence2" class="form-control input-lg" type="text" placeholder="e.g. ATACNGGATAACAN" required></input>
+						</div>
 					</div>
 				</div>
-				<div class="clearfix"></div>
 			</form>
-	
-			<div id="results" class="row">
-				<div id="matches_area" class="col-md-6">
-					<h2>Exact Match Matrix</h2>
-					<hr/>
-					<p class="text-muted">First, a '1' value is shown in all cells with matching letters.</p>
-					<div id="matches">
-					</div>
-				</div>
-				<div id="scored_area" class="col-md-6">
-					<h2>Computed Scores</h2>
-					<hr/>
-					<p class="text-muted">Second, the matrixed is "walked" from bottom-right to top-left.</p>
-					<div id="scored">
-					</div>
-				</div>
-				<div id="trace_area" class="col-md-6">
-					<h2>Best Trace</h2>
-					<hr/>
-					<p class="text-muted">Third, we trace the best scores from top-left to bottom-right.</p>
-					<div id="trace">
-					</div>
-				</div>
-				<div id="alignments_area" class="col-md-6">
-					<h2>Corresponding Alignment</h2>
-					<hr/>
-					<p class="text-muted">Lastly, we print the best alignment!</p>
-					<div id="alignments">
-					</div>
-				</div>
-			</div>
-	
-			<footer class="footer text-center">
-				Developed with jQuery and Bootstrap. Released under the <a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache 2</a> license on <a href="https://github.com/preston/alignment">GitHub</a>. Copyright &copy; 2014 <a href="http://prestonlee">Preston Lee</a>. All rights reserved.
-			</footer>
-		</div>
-	
-	
 
+			<div id="results">
+				<div class="row">
+					<div class="card col-md-6 offset-3">
+					  <div class="card-body">
+					    <h5 class="card-title">Exact Match Matrix</h5>
+					    <p class="card-text">First, a "1" value is shown in all cells with matching letters.</p>
+					    <div id="matches"></div>
+					  </div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="card col-md-6 offset-3">
+						<div class="card-body">
+							<h5 class="card-title">Computed Scores</h5>
+							<p class="card-text">Second, the matrix is "walked" from bottom-right to top-left.</p>
+							<div id="scored"></div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="card col-md-6 offset-3">
+						<div class="card-body">
+							<h5 class="card-title">Best Trace</h5>
+							<p class="card-text">Third, we trace the best scores from top-left to bottom-right.</p>
+							<div id="trace"></div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="card col-md-6 offset-3">
+					  <div class="card-body">
+					    <h5 class="card-title">Corresponding Alignment</h5>
+					    <p class="card-text">Lastly, we print the best alignment!</p>
+							<div id="alignments"></div>
+					  </div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+		<div id="footer" class="footer text-center">
+			Released under the <a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache 2</a> license by Preston Lee. This fork built by <a href="">Tony Boyles</a>.
+		</div>
+
+		<script src="http://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+		<script src="javascripts/application.js"></script>
+		<script>
+		$(function() {
+		  $("#results").hide();
+		  $("body").on("keyup", "#sequence_form input", function() {
+		    var s1 = $("#sequence1").val().toUpperCase();
+		    var s2 = $("#sequence2").val().toUpperCase();
+		    if (s1.length > 0 && s2.length > 0) {
+		      clearVisualizations();
+		      $("#results").slideDown();
+					var start = Date.now();
+		      var data = generateMatrixData(s1, s2);
+					console.log("Matrix Data Generation: ", Date.now() - start);
+		      refreshVizualization(data, "matches");
+					start = Date.now();
+		      var scored = generateScoredData(s1, s2, data);
+					console.log("Data Scoring: ", Date.now() - start);
+		      refreshVizualization(scored, "scored");
+					start = Date.now();
+		      var alignments = addTraceData(s1, s2, scored);
+					console.log("Trace Data Adding: ", Date.now() - start);
+		      refreshVizualization(scored, "trace");
+		      refreshAlignments(alignments);
+		    } else {
+		      clearVisualizations();
+		      $("#results").slideUp();
+		    }
+		  });
+		});
+
+		function clearVisualizations() {
+		  $("#matches").innerHTML = "";
+		  $("#scored").innerHTML = "";
+		  $("#trace").innerHTML = "";
+		  $("#alignments").innerHTML = "";
+		}
+
+		function refreshAlignments(alignments) {
+		  var html = "";
+		  html += "<h1>" + alignments[0] + "</h1>";
+		  html += "<h1>" + alignments[1] + "</h1>";
+		  $("#alignments").html(html);
+		}
+
+		function refreshVizualization(data, elem) {
+		  var m = $("#" + elem);
+		  var html = '<table class="table table-striped table-condensed table-bordered"><tbody>';
+		  var type = "th";
+		  for (var y = 0, len = data.length; y < len; ++y) {
+		    html += "<tr>";
+		    if (y > 0) {
+		      type = "td";
+		    }
+		    for (var x = 0, rowLen = data[y].length; x < rowLen; ++x) {
+		      html += "<" + type + ">";
+		      if (x == 0) {
+		        html += "<b>" + data[y][x] + "</b>";
+		      } else {
+		        html += data[y][x];
+		      }
+		      data[y][x];
+		      html += "</" + type + ">";
+		    }
+		    html += "</tr>";
+		  }
+		  html += "</tbody></table>";
+		  m.html(html);
+		}
+		</script>
 	</body>
 </html>
